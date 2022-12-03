@@ -1,0 +1,83 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+  <meta charset='utf-8'>
+  <link href="https://cdn.jsdelivr.net/npm/@exampledev/new.css@1.1.2/new.min.css" rel="stylesheet">
+</head>
+
+<body>
+  <form id="form">
+    <input type="text" name="word" placeholder="Search" />
+    <button type="submit">Search</button>
+  </form>
+  <div id="date"></div>
+  <div id="action"></div>
+  <script>
+    const form = document.getElementById('form');
+    const date = document.getElementById('date');
+    const action = document.getElementById('action');
+
+    // サーバにリクエスト
+    function search(pushState) {
+      if (!form.word.value) {
+        return;
+      }
+      // 検索条件を JSON 化
+      const body = JSON.stringify({ word: form.word.value });
+      fetch(location.pathname + '/data.json', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json'
+        },
+        body,
+      }).then(res => {
+        // とりあえずレスポンスは無視して読み込み日時をページに表示するようにします。
+
+        // 検索条件の JSON -> URL エンコード -> base64 エンコード -> URL のハッシュに付ける
+        const hash = '#' + btoa(encodeURIComponent(body));
+        const now = new Date();
+        date.innerText = now;
+        if (pushState) {
+          history.pushState(now, '', hash);
+          action.innerText = 'テキストフィールドの入力値で検索';
+        } else {
+          history.replaceState(now, null, hash);
+          action.innerText = 'URLハッシュの値で検索';
+        }
+      });
+    }
+
+    // URL のハッシュ部分から検索条件を復元
+    function restoreForm() {
+      if (location.hash) {
+        // URL のハッシュ部分を base64 デコード -> URL デコード
+        const decodedHash = decodeURIComponent(atob(location.hash.substring(1)));
+        const formObject = JSON.parse(decodedHash);
+        form.word.value = formObject.word; // 検索条件を画面に反映
+      } else {
+        form.word.value = '';
+      }
+    }
+
+    form.addEventListener("submit", event => {
+      // 検索ボタンをクリックした時に実行される。
+      event.preventDefault();
+      search(true);
+    });
+
+    addEventListener('popstate', event => {
+      // history back した時に実行される。
+      date.innerText = event.state;
+      action.innerText = 'state からページを復元';
+      restoreForm();
+    });
+
+    // 初回読み込みやリロードした時に実行される。
+    restoreForm();
+    search(false);
+
+  </script>
+</body>
+
+</html>
