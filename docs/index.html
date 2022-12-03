@@ -36,7 +36,7 @@
 
         // 検索条件の JSON -> URL エンコード -> base64 エンコード -> URL のハッシュに付ける
         const hash = '#' + btoa(encodeURIComponent(body));
-        const now = new Date();
+        const now = new Date().toISOString();
         date.innerText = now;
         if (pushState) {
           history.pushState(now, '', hash);
