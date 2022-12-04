@@ -54,7 +54,7 @@
       }).then(res => {
         // とりあえずレスポンスは無視して読み込み日時をページに表示するようにします。
 
-        // 検索条件の JSON -> URL エンコード -> base64 エンコード -> URL のハッシュに付ける
+        // 検索条件の JSON -> 文字列をバイナリに変換 -> base64 エンコード -> URL のハッシュに付ける
         const hash = '#' + btoa(toBinary(body));
         const now = new Date().toISOString();
         date.innerText = now;
@@ -71,7 +71,7 @@
     // URL のハッシュ部分から検索条件を復元
     function restoreForm() {
       if (location.hash) {
-        // URL のハッシュ部分を base64 デコード -> URL デコード
+        // URL のハッシュ部分を base64 デコード -> バイナリを文字列に変換
         const decodedHash = fromBinary(atob(location.hash.substring(1)));
         const formObject = JSON.parse(decodedHash);
         form.word.value = formObject.word; // 検索条件を画面に反映
