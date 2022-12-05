@@ -25,6 +25,8 @@
       for (let i = 0; i < codeUnits.length; i++) {
         codeUnits[i] = string.charCodeAt(i);
       }
+
+      // TypeScript の場合は、`...Array.from(` を追加しないと型エラーになる。。
       return String.fromCharCode(...new Uint8Array(codeUnits.buffer));
     }
 
@@ -35,6 +37,8 @@
       for (let i = 0; i < bytes.length; i++) {
         bytes[i] = binary.charCodeAt(i);
       }
+
+      // TypeScript の場合は、`...Array.from(` を追加しないと型エラーになる。。
       return String.fromCharCode(...new Uint16Array(bytes.buffer));
     }
 
